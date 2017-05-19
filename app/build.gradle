@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+apply plugin: 'auto-patch-plugin'
+apply plugin: 'robust'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
+    defaultConfig {
+        applicationId "com.jarry.testrobust"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    //aapt配置
+    aaptOptions {
+        //不用压缩的文件
+        noCompress 'pak', 'dat', 'bin', 'notice'
+        //打包时候要忽略的文件
+        ignoreAssetsPattern "!.svn:!.git"
+    }
+    //    签名配置
+    signingConfigs {
+        debug {}
+        release {
+            storeFile file("testrobust.jks")
+            storePassword "111111"
+            keyAlias "key0"
+            keyPassword "111111"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            multiDexEnabled true
+            zipAlignEnabled true
+            signingConfig signingConfigs.release //设置签名信息
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'com.meituan.robust:robust:0.3.2'
+    compile 'org.javassist:javassist:3.20.0-GA'
+    testCompile 'junit:junit:4.12'
+}
